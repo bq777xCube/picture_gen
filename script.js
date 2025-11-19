@@ -1,5 +1,8 @@
+// script.js
+
+// Модель именно для картинок
 const API_BASE =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent";
 
 const apiKeyInput = document.getElementById("apiKey");
 const promptInput = document.getElementById("prompt");
@@ -28,43 +31,42 @@ generateBtn.addEventListener("click", async () => {
     const res = await fetch(`${API_BASE}?key=${encodeURIComponent(apiKey)}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
+      // ВАЖНО: без responseMimeType, просто обычный generateContent
       body: JSON.stringify({
-        // для имиджей важно указать, что нужны изображения в responseMimeType
         contents: [
           {
             role: "user",
             parts: [
               {
                 text:
-                  "Generate a single high quality image of a car. " +
+                  "Generate a single high-quality image of a car. " +
+                  "Make it detailed and visually appealing. " +
                   "Description: " +
-                  prompt
-              }
-            ]
-          }
+                  prompt,
+              },
+            ],
+          },
         ],
+        // Опционально: просим текст+картинку
         generationConfig: {
-          // просим именно картинку
-          responseMimeType: "image/png"
-        }
-      })
+          responseModalities: ["TEXT", "IMAGE"],
+          // можно добавить aspect_ratio: "16:9" и т.п. по желанию
+        },
+      }),
     });
 
     if (!res.ok) {
       const errText = await res.text();
-      statusEl.textContent = `Error: ${res.status} ${res.statusText}`;
       console.error("Gemini error:", errText);
+      statusEl.textContent = `Error: ${res.status} ${res.statusText}`;
       generateBtn.disabled = false;
       return;
     }
 
     const data = await res.json();
-    /*
-      Для image-ответов Gemini v1beta обычно возвращает base64
-      в data.candidates[0].content.parts[0].inlineData.data
-    */
+    console.log("Gemini response:", data);
 
     const candidate = data.candidates?.[0];
     if (!candidate) {
@@ -73,13 +75,15 @@ generateBtn.addEventListener("click", async () => {
       return;
     }
 
-    const part = candidate.content?.parts?.find(
-      (p) => p.inlineData && p.inlineData.data
-    );
+    // Ищем первую часть с картинкой
+    const part =
+      candidate.content?.parts?.find(
+        (p) => p.inlineData && p.inlineData.data
+      ) || null;
 
     if (!part) {
       statusEl.textContent = "No image data in response.";
-      console.log("Response:", data);
+      console.log("Full response (no inlineData):", data);
       generateBtn.disabled = false;
       return;
     }
