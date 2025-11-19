@@ -95,7 +95,7 @@ button:disabled {
 
 .image-container {
   margin-top: 10px;
-  min-height: 200px;
+  min-height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,4 +108,9 @@ button:disabled {
   display: block;
   max-width: 100%;
   height: auto;
+}
+
+.placeholder {
+  font-size: 13px;
+  color: #7d84aa;
 }

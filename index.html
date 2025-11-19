@@ -2,32 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Gemini Car Image Generator</title>
+  <title>Car Image Generator — Hugging Face FLUX.1-dev</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
     <header>
-      <h1>Car Image Generator (Gemini 2.5 Flash Image)</h1>
-      <p>Describe the car – get an AI-generated picture.</p>
+      <h1>Car Image Generator</h1>
+      <p>Uses Hugging Face FLUX.1-dev to generate car images from text.</p>
     </header>
 
     <section class="config">
       <label>
-        Gemini API key
-        <input id="apiKey" type="password" placeholder="AIza..." />
+        Hugging Face API token
+        <input id="hfToken" type="password" placeholder="hf_..." />
       </label>
 
       <label>
         Prompt
         <textarea id="prompt" rows="3"
-          placeholder="futuristic electric SUV in cyberpunk city at night, ultra realistic, 3/4 front view"></textarea>
+          placeholder="ultra realistic red sports car on a mountain road at sunset, 3/4 front view, cinematic lighting"></textarea>
       </label>
 
       <button id="generateBtn">Generate image</button>
       <p class="hint">
-        Example: <code>red sports car on a mountain road, sunset lighting, ultra realistic</code>
+        Free tier: create a token on Hugging Face → Settings → Access Tokens (with Inference permission).
       </p>
 
       <div id="status"></div>
@@ -36,11 +36,11 @@
     <section class="result">
       <h2>Result</h2>
       <div id="imageContainer" class="image-container">
-        <!-- image will be inserted here -->
+        <span class="placeholder">Image will appear here</span>
       </div>
     </section>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=1"></script>
 </body>
 </html>
