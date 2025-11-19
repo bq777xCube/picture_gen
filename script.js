@@ -1,6 +1,6 @@
 // script.js
 
-// Модель именно для картинок
+// ВАЖНО: модель именно image
 const API_BASE =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent";
 
@@ -33,7 +33,6 @@ generateBtn.addEventListener("click", async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      // ВАЖНО: без responseMimeType, просто обычный generateContent
       body: JSON.stringify({
         contents: [
           {
@@ -41,18 +40,17 @@ generateBtn.addEventListener("click", async () => {
             parts: [
               {
                 text:
-                  "Generate a single high-quality image of a car. " +
-                  "Make it detailed and visually appealing. " +
+                  "Generate a single high-quality, detailed image of a car. " +
+                  "Make it visually appealing. " +
                   "Description: " +
                   prompt,
               },
             ],
           },
         ],
-        // Опционально: просим текст+картинку
         generationConfig: {
-          responseModalities: ["TEXT", "IMAGE"],
-          // можно добавить aspect_ratio: "16:9" и т.п. по желанию
+          // просим только картинку
+          responseModalities: ["IMAGE"],
         },
       }),
     });
