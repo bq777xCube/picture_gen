@@ -2,45 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Car Image Generator — Hugging Face FLUX.1-dev</title>
+  <title>Car Image Generator — OpenAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1>Car Image Generator</h1>
-      <p>Uses Hugging Face FLUX.1-dev to generate car images from text.</p>
-    </header>
+<div class="app">
+  <header>
+    <h1>OpenAI Car Image Generator</h1>
+    <p>Generate car images using OpenAI’s gpt-image-1 model.</p>
+  </header>
 
-    <section class="config">
-      <label>
-        Hugging Face API token
-        <input id="hfToken" type="password" placeholder="hf_..." />
-      </label>
+  <section class="config">
+    <label>
+      OpenAI API key
+      <input id="apiKey" type="password" placeholder="sk-..." />
+    </label>
 
-      <label>
-        Prompt
-        <textarea id="prompt" rows="3"
-          placeholder="ultra realistic red sports car on a mountain road at sunset, 3/4 front view, cinematic lighting"></textarea>
-      </label>
+    <label>
+      Prompt
+      <textarea id="prompt" rows="3"
+        placeholder="ultra realistic red sports car, 3/4 front view, sunset lighting"></textarea>
+    </label>
 
-      <button id="generateBtn">Generate image</button>
-      <p class="hint">
-        Free tier: create a token on Hugging Face → Settings → Access Tokens (with Inference permission).
-      </p>
+    <button id="generateBtn">Generate image</button>
 
-      <div id="status"></div>
-    </section>
+    <div id="status"></div>
+  </section>
 
-    <section class="result">
-      <h2>Result</h2>
-      <div id="imageContainer" class="image-container">
-        <span class="placeholder">Image will appear here</span>
-      </div>
-    </section>
-  </div>
+  <section class="result">
+    <h2>Result</h2>
+    <div id="imageContainer" class="image-container">
+      <span class="placeholder">Image will appear here</span>
+    </div>
+  </section>
+</div>
 
-  <script src="script.js?v=1"></script>
+<script src="script.js?v=1"></script>
 </body>
 </html>
