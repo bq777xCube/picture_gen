@@ -1,29 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Stability AI Car Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>Stability Car Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>Stability AI — Car  Image Generator</h1>
+    <h1>Stability AI — Car Image Generator</h1>
+    <p>Type a prompt about a car and get an image from Stability via Cloudflare Worker.</p>
   </header>
 
   <section class="config">
     <label>
-      Stability API Key
-      <input id="apiKey" type="password" placeholder="sk-xxxxx" />
-    </label>
-
-    <label>
       Prompt
-      <textarea id="prompt" rows="3" placeholder="ultra realistic red sports car, sunset lighting"></textarea>
+      <textarea id="prompt" rows="3"
+        placeholder="ultra realistic red sports car on a mountain road at sunset, 3/4 front view, cinematic lighting"></textarea>
     </label>
 
-    <button id="generateBtn">Generate</button>
+    <button id="generateBtn">Generate image</button>
     <div id="status"></div>
   </section>
 
@@ -35,6 +32,6 @@
   </section>
 </div>
 
-<script src="script.js"></script>
+<script src="script.js?v=1"></script>
 </body>
 </html>

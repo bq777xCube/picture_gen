@@ -36,7 +36,7 @@ label {
   margin-bottom: 12px;
 }
 
-input, textarea {
+textarea {
   width: 100%;
   padding: 8px 10px;
   margin-top: 5px;
@@ -47,7 +47,7 @@ input, textarea {
   font-size: 14px;
 }
 
-input:focus, textarea:focus {
+textarea:focus {
   outline: 1px solid #4f7dff;
   border-color: #4f7dff;
 }
@@ -65,12 +65,6 @@ button {
 }
 
 button:disabled { opacity: 0.5; cursor: default; }
-
-.hint {
-  font-size: 12px;
-  color: #9aa1c5;
-  margin-top: 6px;
-}
 
 #status {
   margin-top: 8px;
