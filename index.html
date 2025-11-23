@@ -1,36 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>SD3 Car Image Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <title>Stability AI Car Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>Stable Diffusion 3 — Car Generator</h1>
-    <p>Generate car images via Together + Stability AI SD3 Medium.</p>
+    <h1>Stability AI — Car Image Generator</h1>
   </header>
 
   <section class="config">
     <label>
-      Together API key
-      <input id="apiKey" type="password" placeholder="tg-..." />
+      Stability API Key
+      <input id="apiKey" type="password" placeholder="sk-xxxxx" />
     </label>
 
     <label>
       Prompt
-      <textarea id="prompt" rows="3"
-        placeholder="ultra realistic red sports car on a mountain road at sunset, 3/4 front view, cinematic lighting"></textarea>
+      <textarea id="prompt" rows="3" placeholder="ultra realistic red sports car, sunset lighting"></textarea>
     </label>
 
-    <button id="generateBtn">Generate image</button>
-
-    <p class="hint">
-      Get free key at <code>https://api.together.xyz</code> → sign up → API keys.
-    </p>
-
+    <button id="generateBtn">Generate</button>
     <div id="status"></div>
   </section>
 
@@ -42,6 +35,6 @@
   </section>
 </div>
 
-<script src="script.js?v=1"></script>
+<script src="script.js"></script>
 </body>
 </html>
