@@ -554,9 +554,7 @@
                         <h4 class="other-cars-title">
                             <i class="fas fa-lightbulb"></i> You might also like:
                         </h4>
-                        <div class="car-list" id="otherCarsList">
-                            <!-- Other cars will be populated here -->
-                        </div>
+                        <div class="car-list" id="otherCarsList"></div>
                     </div>
                 </div>
             </div>
@@ -633,7 +631,6 @@
 
         function cleanText(str) {
             if (!str) return "";
-            // немного почистим строки вида "['a', 'b', ...]"
             return String(str)
                 .replace(/^\[|\]$/g, "")
                 .replace(/['"]/g, "")
@@ -647,6 +644,7 @@
             const fit = (item.fit_score != null ? item.fit_score * 100 : 0).toFixed(1);
 
             topCarName.textContent = `${brand.toUpperCase()} ${model}`;
+            topCarPrice.textContent = `Rating 4.7 / Match 74.1%`;
             topCarPrice.textContent = `Rating ${rating} / Match ${fit}%`;
 
             topCarSpecs.innerHTML = "";
@@ -746,7 +744,6 @@
                 topCarImage.src = url;
             } catch (e) {
                 console.error(e);
-                // fallback картинка
                 topCarImage.src = "https://images.unsplash.com/photo-1549921296-3c52d935b9a1?auto=format&fit=crop&w=1000&q=80";
             }
         }
@@ -795,11 +792,10 @@
             }
         });
 
+        // 🔴 Больше НИКАКОГО авто-запуска рекоммендаций
+        // Просто подставляем пример текста, а дальше пользователь сам жмёт кнопку
         window.onload = function() {
             fillExample('I want to buy an expensive car');
-            setTimeout(() => {
-                carQueryForm.dispatchEvent(new Event('submit'));
-            }, 500);
         };
     </script>
 </body>
