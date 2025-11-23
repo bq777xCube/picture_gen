@@ -15,7 +15,12 @@ body {
 
 header { margin-bottom: 20px; }
 
-h1 { font-size: 24px; margin: 0 0 6px; }
+h1 {
+  font-size: 24px;
+  margin: 0 0 6px;
+}
+
+p { margin: 4px 0; }
 
 .config {
   background: #0b1020;
@@ -39,6 +44,12 @@ input, textarea {
   border: 1px solid #2a3358;
   background: #050814;
   color: #fff;
+  font-size: 14px;
+}
+
+input:focus, textarea:focus {
+  outline: 1px solid #4f7dff;
+  border-color: #4f7dff;
 }
 
 button {
@@ -50,17 +61,40 @@ button {
   border: none;
   cursor: pointer;
   color: #fff;
+  font-size: 14px;
 }
 
-button:disabled { opacity: 0.5; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.hint {
+  font-size: 12px;
+  color: #9aa1c5;
+  margin-top: 6px;
+}
+
+#status {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #f6c945;
+  min-height: 18px;
+}
+
+.result {
+  background: #0b1020;
+  border: 1px solid #1e2440;
+  padding: 16px;
+  border-radius: 16px;
+}
 
 .image-container {
-  border: 1px dashed #2a3358;
+  margin-top: 10px;
   min-height: 220px;
   border-radius: 12px;
+  border: 1px dashed #2a3358;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .image-container img {
@@ -69,6 +103,6 @@ button:disabled { opacity: 0.5; }
 }
 
 .placeholder {
-  color: #7d84aa;
   font-size: 13px;
+  color: #7d84aa;
 }

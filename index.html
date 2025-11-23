@@ -2,30 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Car Image Generator — OpenAI</title>
+  <title>SD3 Car Image Generator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>OpenAI Car Image Generator</h1>
-    <p>Generate car images using OpenAI’s gpt-image-1 model.</p>
+    <h1>Stable Diffusion 3 — Car Generator</h1>
+    <p>Generate car images via Together + Stability AI SD3 Medium.</p>
   </header>
 
   <section class="config">
     <label>
-      OpenAI API key
-      <input id="apiKey" type="password" placeholder="sk-..." />
+      Together API key
+      <input id="apiKey" type="password" placeholder="tg-..." />
     </label>
 
     <label>
       Prompt
       <textarea id="prompt" rows="3"
-        placeholder="ultra realistic red sports car, 3/4 front view, sunset lighting"></textarea>
+        placeholder="ultra realistic red sports car on a mountain road at sunset, 3/4 front view, cinematic lighting"></textarea>
     </label>
 
     <button id="generateBtn">Generate image</button>
+
+    <p class="hint">
+      Get free key at <code>https://api.together.xyz</code> → sign up → API keys.
+    </p>
 
     <div id="status"></div>
   </section>
