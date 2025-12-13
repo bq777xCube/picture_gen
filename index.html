@@ -762,19 +762,57 @@
                 .trim();
         }
 
+        function isMeaningfulInfo(str) {
+            const t = cleanText(str).toLowerCase();
+            if (!t) return false;
+            const junk = [
+                "empty",
+                "none",
+                "n/a",
+                "na",
+                "pros: empty cons: empty"
+            ];
+            return !junk.includes(t);
+        }
+
+        function formatCarName(brand, model) {
+            const brandClean = cleanText(brand);
+            let modelClean = cleanText(model);
+
+            if (!brandClean && !modelClean) return "Unknown car";
+            if (!brandClean) return modelClean;
+            if (!modelClean) return brandClean.toUpperCase();
+
+            const brandLower = brandClean.toLowerCase();
+            const modelLower = modelClean.toLowerCase();
+
+            if (modelLower.startsWith(brandLower)) {
+                modelClean = modelClean.slice(brandClean.length).trim();
+            }
+
+            if (!modelClean) return brandClean.toUpperCase();
+            return `${brandClean.toUpperCase()} ${modelClean}`;
+        }
+
         function displayTopCar(item) {
             const brand = item.brand || "";
             const model = item.model || "";
             const rating = (item.rating != null ? item.rating : 0).toFixed(1);
             const fit = (item.fit_score != null ? item.fit_score * 100 : 0).toFixed(1);
 
-            topCarName.textContent = `${brand.toUpperCase()} ${model}`;
+            const fullName = formatCarName(brand, model);
+            topCarName.textContent = fullName;
             topCarPrice.textContent = `Rating ${rating} · Match ${fit}%`;
 
             topCarSpecs.innerHTML = "";
 
-            const pros = cleanText(item.pros);
-            const cons = cleanText(item.cons);
+            const prosRaw = item.pros;
+            const consRaw = item.cons;
+            const whyRaw = item.why;
+
+            const pros = isMeaningfulInfo(prosRaw) ? cleanText(prosRaw) : "";
+            const cons = isMeaningfulInfo(consRaw) ? cleanText(consRaw) : "";
+            const whyText = isMeaningfulInfo(whyRaw) ? cleanText(whyRaw) : "";
 
             const specs = [];
             if (pros) specs.push({ icon: "fas fa-plus-circle", text: pros });
@@ -791,7 +829,17 @@
                 topCarSpecs.appendChild(specItem);
             });
 
-            topCarDescription.textContent = item.why || pros || "Expert review suggests good overall value.";
+            let descText = "";
+            if (whyText) {
+                descText = whyText;
+            } else if (pros || cons) {
+                const parts = [];
+                if (pros) parts.push(`Pros: ${pros}`);
+                if (cons) parts.push(`Cons: ${cons}`);
+                descText = parts.join(" ");
+            }
+
+            topCarDescription.textContent = descText || "Expert review suggests good overall value.";
 
             descriptionToggle.classList.remove('active');
             topCarDescription.classList.remove('active');
@@ -804,9 +852,11 @@
             items.forEach((item) => {
                 const brand = item.brand || "";
                 const model = item.model || "";
+                const fullName = formatCarName(brand, model);
+
                 const rating = (item.rating != null ? item.rating : 0).toFixed(1);
                 const fit = (item.fit_score != null ? item.fit_score * 100 : 0).toFixed(0);
-                const pros = cleanText(item.pros);
+                const pros = isMeaningfulInfo(item.pros) ? cleanText(item.pros) : "";
 
                 const card = document.createElement("div");
                 card.className = "car-card";
@@ -830,7 +880,7 @@
                 card.innerHTML = `
                     <div class="car-card-header">
                         <div>
-                            <div class="car-model">${brand.toUpperCase()} ${model}</div>
+                            <div class="car-model">${fullName}</div>
                             <div class="car-year">Match ${fit}%</div>
                         </div>
                         <div class="car-price-small">Rating ${rating}</div>
@@ -845,6 +895,17 @@
                         <button class="view-btn" type="button">View</button>
                     </div>
                 `;
+
+                const viewBtn = card.querySelector('.view-btn');
+                viewBtn.addEventListener('click', async () => {
+                    displayTopCar(item);
+                    showContentBlocks();
+                    await generateTopCarImage(item);
+                    window.scrollTo({
+                        top: document.querySelector('header').offsetTop,
+                        behavior: 'smooth'
+                    });
+                });
 
                 otherCarsList.appendChild(card);
             });
