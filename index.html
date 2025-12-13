@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car HuyAir | Find Your Perfect Car</title>
+    <meta name="description" content="Car HuyAir is an AI powered car recommendation tool that finds the best car for your needs based on natural language queries.">
+
+    <!-- Open Graph social preview -->
+    <meta property="og:title" content="Car HuyAir - Find your perfect car with AI">
+    <meta property="og:description" content="Describe your ideal car in natural language and let Car HuyAir find the best matches for you.">
+    <meta property="og:image" content="carhuyair-logo.png">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="carhuyair-logo.png">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -16,7 +27,6 @@
         :root {
             --primary: #b0001b;
             --secondary: #5a020e;
-            --accent: #d32f2f;
             --bg: #f5f5f5;
             --card-bg: #ffffff;
             --text-main: #111111;
@@ -25,6 +35,8 @@
             --chip-bg: #fafafa;
             --chip-border: #e5e5e5;
             --highlight: #ffc107;
+            --radius-lg: 18px;
+            --radius-md: 14px;
         }
 
         body {
@@ -39,12 +51,24 @@
             margin: 0 auto;
         }
 
-        /* ===== Header + Logo ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Header + Logo */
 
         header {
             text-align: center;
-            padding: 10px 0 24px;
-            margin-bottom: 16px;
+            padding: 8px 0 16px;
+            margin-bottom: 8px;
         }
 
         .logo {
@@ -54,21 +78,27 @@
         }
 
         .logo-image {
-            height: 400px; /* bigger logo */
+            height: 400px;
             width: auto;
             display: block;
         }
 
+        @media (max-width: 600px) {
+            .logo-image {
+                height: 260px;
+            }
+        }
+
         .tagline {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--muted);
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-top: 6px;
+            margin-top: 4px;
             text-align: center;
         }
 
-        /* ===== Layout ===== */
+        /* Layout */
 
         .app-container {
             display: grid;
@@ -83,11 +113,11 @@
             }
         }
 
-        /* ===== Card ===== */
+        /* Card */
 
         .card {
             background: var(--card-bg);
-            border-radius: 18px;
+            border-radius: var(--radius-lg);
             padding: 26px 28px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
             border: 1px solid var(--border);
@@ -112,17 +142,28 @@
             font-size: 1.3rem;
         }
 
-        /* ===== Form ===== */
+        /* Form */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .query-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
 
         .query-input {
             width: 100%;
             background: #ffffff;
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: var(--radius-md);
             padding: 18px;
             font-size: 1rem;
             color: var(--text-main);
-            margin-bottom: 18px;
             transition: all 0.25s ease;
             resize: none;
         }
@@ -142,7 +183,7 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             color: #ffffff;
             border: none;
-            border-radius: 14px;
+            border-radius: var(--radius-md);
             padding: 16px;
             font-size: 1.05rem;
             font-weight: 600;
@@ -156,18 +197,23 @@
             letter-spacing: 1px;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background: linear-gradient(90deg, var(--secondary), var(--primary));
             box-shadow: 0 8px 18px rgba(90, 2, 14, 0.25);
             transform: translateY(-2px);
         }
 
-        .submit-btn:active {
+        .submit-btn:active:not(:disabled) {
             transform: translateY(0);
             box-shadow: none;
         }
 
-        /* ===== Examples ===== */
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        /* Examples */
 
         .examples {
             margin-top: 22px;
@@ -194,14 +240,16 @@
             transition: all 0.2s ease;
             border: 1px solid var(--chip-border);
             color: var(--text-main);
+            font: inherit;
         }
 
-        .example-chip:hover {
+        .example-chip:hover,
+        .example-chip:focus-visible {
             border-color: var(--primary);
             background: #fff5f6;
         }
 
-        /* ===== Results ===== */
+        /* Results */
 
         .results-container {
             display: none;
@@ -221,7 +269,7 @@
         }
 
         .car-image {
-            border-radius: 14px;
+            border-radius: var(--radius-md);
             overflow: hidden;
             height: 280px;
             position: relative;
@@ -314,6 +362,9 @@
             padding: 6px 0;
             transition: color 0.2s ease;
             color: var(--muted);
+            background: none;
+            border: none;
+            text-align: left;
         }
 
         .toggle-header:hover {
@@ -342,7 +393,22 @@
             margin-top: 8px;
         }
 
-        /* ===== Other cars ===== */
+        .empty-state {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.95rem;
+            padding: 24px 10px;
+        }
+
+        .empty-state i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+
+        /* Other cars */
 
         .other-cars {
             margin-top: 12px;
@@ -369,7 +435,7 @@
 
         .car-card {
             background: #ffffff;
-            border-radius: 14px;
+            border-radius: var(--radius-md);
             padding: 16px;
             transition: all 0.22s ease;
             border: 1px solid var(--border);
@@ -446,7 +512,7 @@
             background: #fff5f6;
         }
 
-        /* ===== Loading ===== */
+        /* Loading */
 
         .loading {
             display: none;
@@ -481,7 +547,7 @@
             100% { opacity: 0.6; }
         }
 
-        /* ===== Footer ===== */
+        /* Footer */
 
         footer {
             text-align: center;
@@ -527,85 +593,98 @@
             </div>
             <p class="tagline">Find your perfect car with AI</p>
         </header>
-        
-        <div class="app-container">
-            <div class="card">
-                <h2 class="section-title"><i class="fas fa-comment-alt"></i> Describe Your Dream Car</h2>
-                <form id="carQueryForm">
-                    <textarea class="query-input" id="userQuery" placeholder="Tell us about your ideal car. For example: 'I want to buy an expensive car' or 'I need to buy a Toyota Camry, made no earlier than 2020'" rows="5"></textarea>
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-search"></i> Find My Perfect Car
-                    </button>
-                    <div id="errorMessage" class="error-message"></div>
-                </form>
-                
-                <div class="examples">
-                    <div class="examples-title">Try these examples:</div>
-                    <div class="example-chips">
-                        <div class="example-chip" onclick="fillExample('I want to buy an expensive car')">Expensive Car</div>
-                        <div class="example-chip" onclick="fillExample('I need to buy a Toyota Camry, made no earlier than 2020')">Toyota Camry 2020+</div>
-                        <div class="example-chip" onclick="fillExample('Looking for a fuel-efficient hybrid SUV under $40,000')">Hybrid SUV under $40K</div>
-                        <div class="example-chip" onclick="fillExample('I want a luxury sedan with all-wheel drive and advanced safety features')">Luxury AWD Sedan</div>
-                        <div class="example-chip" onclick="fillExample('Sporty coupe with high horsepower for weekend drives')">Sporty Coupe</div>
+
+        <main>
+            <h1 class="sr-only">Car HuyAir - AI car recommendation assistant</h1>
+
+            <div class="app-container">
+                <div class="card">
+                    <h2 class="section-title"><i class="fas fa-comment-alt"></i> Describe Your Dream Car</h2>
+                    <form id="carQueryForm">
+                        <div class="form-group">
+                            <label for="userQuery" class="query-label">What are you looking for?</label>
+                            <textarea class="query-input" id="userQuery" placeholder="For example: I want to buy an expensive car, or I need a Toyota Camry not older than 2020" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <i class="fas fa-search"></i>
+                            <span class="submit-text">Find my perfect car</span>
+                        </button>
+                        <div id="errorMessage" class="error-message" aria-live="polite"></div>
+                    </form>
+                    
+                    <div class="examples">
+                        <div class="examples-title">Try these examples:</div>
+                        <div class="example-chips">
+                            <button type="button" class="example-chip" onclick="fillExample('I want to buy an expensive car')">Expensive car</button>
+                            <button type="button" class="example-chip" onclick="fillExample('I need to buy a Toyota Camry, made no earlier than 2020')">Toyota Camry 2020+</button>
+                            <button type="button" class="example-chip" onclick="fillExample('Looking for a fuel-efficient hybrid SUV under $40,000')">Hybrid SUV under 40k</button>
+                            <button type="button" class="example-chip" onclick="fillExample('I want a luxury sedan with all-wheel drive and advanced safety features')">Luxury AWD sedan</button>
+                            <button type="button" class="example-chip" onclick="fillExample('Sporty coupe with high horsepower for weekend drives')">Sporty coupe</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="card">
-                <h2 class="section-title"><i class="fas fa-car"></i> Your Recommended Cars</h2>
-                <div class="loading" id="loadingIndicator">
-                    <div class="spinner"></div>
-                    <p class="pulse">Analyzing your query and finding the best matches...</p>
-                </div>
                 
-                <div class="results-container" id="resultsContainer">
-                    <div class="top-car">
-                        <div class="car-image">
-                            <img id="topCarImage" src="" alt="Top Car">
-                            <div class="car-badge">
-                                <i class="fas fa-crown"></i> TOP MATCH
-                            </div>
+                <div class="card">
+                    <h2 class="section-title"><i class="fas fa-car"></i> Your Recommended Cars</h2>
+                    <div class="loading" id="loadingIndicator">
+                        <div class="spinner"></div>
+                        <p class="pulse">Analyzing your query and finding the best matches...</p>
+                    </div>
+                    
+                    <div class="results-container" id="resultsContainer">
+                        <div class="empty-state" id="emptyState">
+                            <i class="fas fa-magnifying-glass"></i>
+                            <span>Describe your dream car on the left and your recommendations will appear here.</span>
                         </div>
-                        <div class="car-details">
-                            <div>
-                                <h3 class="car-name" id="topCarName"></h3>
-                                <div class="car-price" id="topCarPrice"></div>
-                                <div class="car-specs" id="topCarSpecs"></div>
-                                <div class="description-toggle">
-                                    <div class="toggle-header" id="descriptionToggle">
-                                        <i class="fas fa-chevron-down"></i>
-                                        <span>View Description</span>
+
+                        <div class="top-car" id="topCarBlock" style="display:none;">
+                            <div class="car-image">
+                                <img id="topCarImage" src="" alt="Top car recommendation">
+                                <div class="car-badge">
+                                    <i class="fas fa-crown"></i> Top match
+                                </div>
+                            </div>
+                            <div class="car-details">
+                                <div>
+                                    <h3 class="car-name" id="topCarName"></h3>
+                                    <div class="car-price" id="topCarPrice"></div>
+                                    <div class="car-specs" id="topCarSpecs"></div>
+                                    <div class="description-toggle">
+                                        <button type="button" class="toggle-header" id="descriptionToggle" aria-expanded="false">
+                                            <i class="fas fa-chevron-down"></i>
+                                            <span>View description</span>
+                                        </button>
+                                        <div class="car-description" id="topCarDescription"></div>
                                     </div>
-                                    <div class="car-description" id="topCarDescription"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="other-cars">
-                        <h4 class="other-cars-title">
-                            <i class="fas fa-lightbulb"></i> You might also like:
-                        </h4>
-                        <div class="car-list" id="otherCarsList"></div>
+                        
+                        <div class="other-cars" id="otherCarsBlock" style="display:none;">
+                            <h4 class="other-cars-title">
+                                <i class="fas fa-lightbulb"></i> You might also like
+                            </h4>
+                            <div class="car-list" id="otherCarsList"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
         
         <footer>
-            <p>Car HuyAir &copy; 2025 | Advanced Car Recommendation System</p>
+            <p>Car HuyAir © 2025 | Advanced car recommendation system</p>
             <div class="feature-highlights">
                 <div class="feature">
                     <i class="fas fa-bolt"></i>
-                    <span>AI-Powered Matching</span>
+                    <span>AI powered matching</span>
                 </div>
                 <div class="feature">
                     <i class="fas fa-brain"></i>
-                    <span>Vector Search on Real Reviews</span>
+                    <span>Vector search on real reviews</span>
                 </div>
                 <div class="feature">
                     <i class="fas fa-image"></i>
-                    <span>AI-Generated Visuals</span>
+                    <span>AI generated visuals</span>
                 </div>
             </div>
         </footer>
@@ -619,6 +698,9 @@
         const userQuery = document.getElementById('userQuery');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const resultsContainer = document.getElementById('resultsContainer');
+        const emptyState = document.getElementById('emptyState');
+        const topCarBlock = document.getElementById('topCarBlock');
+        const otherCarsBlock = document.getElementById('otherCarsBlock');
         const topCarImage = document.getElementById('topCarImage');
         const topCarName = document.getElementById('topCarName');
         const topCarPrice = document.getElementById('topCarPrice');
@@ -627,17 +709,28 @@
         const descriptionToggle = document.getElementById('descriptionToggle');
         const otherCarsList = document.getElementById('otherCarsList');
         const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.querySelector('.submit-text');
 
         function fillExample(exampleText) {
             userQuery.value = exampleText;
+            userQuery.focus();
         }
 
         function setLoading(isLoading) {
             loadingIndicator.style.display = isLoading ? 'block' : 'none';
+            submitBtn.disabled = isLoading;
+            submitText.textContent = isLoading ? 'Searching...' : 'Find my perfect car';
         }
 
         function setResultsVisible(visible) {
             resultsContainer.style.display = visible ? 'block' : 'none';
+        }
+
+        function showContentBlocks() {
+            emptyState.style.display = 'none';
+            topCarBlock.style.display = 'grid';
+            otherCarsBlock.style.display = 'block';
         }
 
         function clearError() {
@@ -676,7 +769,7 @@
             const fit = (item.fit_score != null ? item.fit_score * 100 : 0).toFixed(1);
 
             topCarName.textContent = `${brand.toUpperCase()} ${model}`;
-            topCarPrice.textContent = `Rating ${rating} / Match ${fit}%`;
+            topCarPrice.textContent = `Rating ${rating} · Match ${fit}%`;
 
             topCarSpecs.innerHTML = "";
 
@@ -702,7 +795,8 @@
 
             descriptionToggle.classList.remove('active');
             topCarDescription.classList.remove('active');
-            descriptionToggle.querySelector('span').textContent = 'View Description';
+            descriptionToggle.querySelector('span').textContent = 'View description';
+            descriptionToggle.setAttribute('aria-expanded', 'false');
         }
 
         function displayOtherCars(items) {
@@ -748,7 +842,7 @@
                         <div class="rating">
                             ${stars} <span>${rating}</span>
                         </div>
-                        <button class="view-btn">View</button>
+                        <button class="view-btn" type="button">View</button>
                     </div>
                 `;
 
@@ -790,12 +884,15 @@
             }
 
             setLoading(true);
-            setResultsVisible(false);
+            setResultsVisible(true);
 
             try {
                 const items = await fetchRecommendations(query);
                 if (!items.length) {
                     showError("No cars found for this query. Try to change your description.");
+                    emptyState.style.display = 'block';
+                    topCarBlock.style.display = 'none';
+                    otherCarsBlock.style.display = 'none';
                     return;
                 }
 
@@ -804,7 +901,7 @@
                 displayOtherCars(others);
                 await generateTopCarImage(top);
 
-                setResultsVisible(true);
+                showContentBlocks();
             } catch (err) {
                 console.error(err);
                 showError("Something went wrong. Please try again later.");
@@ -816,11 +913,9 @@
         descriptionToggle.addEventListener('click', function() {
             this.classList.toggle('active');
             topCarDescription.classList.toggle('active');
-            if (this.classList.contains('active')) {
-                this.querySelector('span').textContent = 'Hide Description';
-            } else {
-                this.querySelector('span').textContent = 'View Description';
-            }
+            const expanded = this.classList.contains('active');
+            this.querySelector('span').textContent = expanded ? 'Hide description' : 'View description';
+            this.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         });
 
         window.onload = function() {
