@@ -758,14 +758,16 @@
         function cleanText(str) {
             if (!str) return "";
             return String(str)
-                .replace(/[\[\]"']/g, "") // remove brackets and quotes anywhere
+                .replace(/[\[\]"']/g, "")
                 .replace(/\s+/g, " ")
                 .trim();
         }
 
         function isMeaningfulInfo(str) {
-            const t = cleanText(str).toLowerCase();
+            const cleaned = cleanText(str);
+            const t = cleaned.toLowerCase();
             if (!t) return false;
+
             const junk = [
                 "empty",
                 "none",
@@ -773,7 +775,12 @@
                 "na",
                 "pros: empty cons: empty"
             ];
-            return !junk.includes(t);
+            if (junk.includes(t)) return false;
+
+            // if it already looks like a "Pros: ... Cons: ..." dump, treat as non-meaningful
+            if (t.includes("pros:") || t.includes("cons:")) return false;
+
+            return true;
         }
 
         function formatCarName(brand, model) {
@@ -795,6 +802,13 @@
             return `${brandClean.toUpperCase()} ${modelClean}`;
         }
 
+        function resetDescriptionUI() {
+            descriptionToggle.classList.remove('active');
+            topCarDescription.classList.remove('active');
+            descriptionToggle.querySelector('span').textContent = 'View description';
+            descriptionToggle.setAttribute('aria-expanded', 'false');
+        }
+
         function displayTopCar(item) {
             const brand = item.brand || "";
             const model = item.model || "";
@@ -805,8 +819,6 @@
             topCarName.textContent = fullName;
             topCarPrice.textContent = `Rating ${rating} · Match ${fit}%`;
 
-            topCarSpecs.innerHTML = "";
-
             const prosRaw = item.pros;
             const consRaw = item.cons;
             const whyRaw = item.why;
@@ -815,13 +827,27 @@
             const cons = isMeaningfulInfo(consRaw) ? cleanText(consRaw) : "";
             const hasWhy = isMeaningfulInfo(whyRaw);
 
+            topCarSpecs.innerHTML = "";
+            resetDescriptionUI();
+
+            // Case 1: no structured pros/cons at all
+            if (!pros && !cons) {
+                const cardText = hasWhy ? cleanText(whyRaw) : "Good overall value based on expert reviews.";
+                const specItem = document.createElement("div");
+                specItem.className = "spec-item";
+                specItem.innerHTML = `<i class="fas fa-car"></i><span>${cardText}</span>`;
+                topCarSpecs.appendChild(specItem);
+
+                // no separate description – everything is already in the card
+                topCarDescription.textContent = "";
+                descriptionBlock.style.display = "none";
+                return;
+            }
+
+            // Case 2: we have real pros/cons => show them in cards
             const specs = [];
             if (pros) specs.push({ icon: "fas fa-plus-circle", text: pros });
             if (cons) specs.push({ icon: "fas fa-minus-circle", text: cons });
-
-            if (!specs.length) {
-                specs.push({ icon: "fas fa-car", text: "Good overall value based on expert reviews." });
-            }
 
             specs.slice(0, 4).forEach(spec => {
                 const specItem = document.createElement("div");
@@ -830,22 +856,14 @@
                 topCarSpecs.appendChild(specItem);
             });
 
-            // Description logic
+            // Description only if we have extra "why" text that's not just pros/cons again
             if (hasWhy) {
-                const whyText = cleanText(whyRaw);
-                topCarDescription.textContent = whyText;
+                topCarDescription.textContent = cleanText(whyRaw);
                 descriptionBlock.style.display = "block";
             } else {
-                // No meaningful "why" -> hide description block completely
                 topCarDescription.textContent = "";
                 descriptionBlock.style.display = "none";
             }
-
-            // reset toggle state
-            descriptionToggle.classList.remove('active');
-            topCarDescription.classList.remove('active');
-            descriptionToggle.querySelector('span').textContent = 'View description';
-            descriptionToggle.setAttribute('aria-expanded', 'false');
         }
 
         function displayOtherCars(items) {
