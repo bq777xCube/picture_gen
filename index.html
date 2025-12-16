@@ -512,7 +512,7 @@
             background: #fff5f6;
         }
 
-        /* Loading */
+        /* Loading section */
 
         .loading {
             display: none;
@@ -545,6 +545,14 @@
             0% { opacity: 0.6; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
+        }
+
+        /* Top image loading effect */
+
+        #topCarImage.loading {
+            opacity: 0.35;
+            filter: blur(2px);
+            transition: opacity 0.2s ease, filter 0.2s ease;
         }
 
         /* Footer */
@@ -713,6 +721,11 @@
         const submitBtn = document.getElementById('submitBtn');
         const submitText = document.querySelector('.submit-text');
 
+        const imageCache = new Map();
+        const DEFAULT_IMAGE =
+            "https://images.unsplash.com/photo-1549921296-3c52d935b9a1?auto=format&fit=crop&w=1000&q=80";
+        let currentImageKey = null;
+
         function fillExample(exampleText) {
             userQuery.value = exampleText;
             userQuery.focus();
@@ -777,7 +790,6 @@
             ];
             if (junk.includes(t)) return false;
 
-            // if it already looks like a "Pros: ... Cons: ..." dump, treat as non-meaningful
             if (t.includes("pros:") || t.includes("cons:")) return false;
 
             return true;
@@ -830,7 +842,6 @@
             topCarSpecs.innerHTML = "";
             resetDescriptionUI();
 
-            // Case 1: no structured pros/cons at all
             if (!pros && !cons) {
                 const cardText = hasWhy ? cleanText(whyRaw) : "Good overall value based on expert reviews.";
                 const specItem = document.createElement("div");
@@ -838,13 +849,11 @@
                 specItem.innerHTML = `<i class="fas fa-car"></i><span>${cardText}</span>`;
                 topCarSpecs.appendChild(specItem);
 
-                // no separate description – everything is already in the card
                 topCarDescription.textContent = "";
                 descriptionBlock.style.display = "none";
                 return;
             }
 
-            // Case 2: we have real pros/cons => show them in cards
             const specs = [];
             if (pros) specs.push({ icon: "fas fa-plus-circle", text: pros });
             if (cons) specs.push({ icon: "fas fa-minus-circle", text: cons });
@@ -856,7 +865,6 @@
                 topCarSpecs.appendChild(specItem);
             });
 
-            // Description only if we have extra "why" text that's not just pros/cons again
             if (hasWhy) {
                 topCarDescription.textContent = cleanText(whyRaw);
                 descriptionBlock.style.display = "block";
@@ -931,9 +939,25 @@
         }
 
         async function generateTopCarImage(item) {
+            const brand = item.brand || "";
+            const model = item.model || "";
+            const keyBase = `${brand}_${model}`.trim();
+            const key = keyBase ? keyBase.toLowerCase() : "unknown";
+
+            currentImageKey = key;
+
+            topCarImage.src = DEFAULT_IMAGE;
+            topCarImage.classList.add("loading");
+
+            if (imageCache.has(key)) {
+                if (currentImageKey === key) {
+                    topCarImage.src = imageCache.get(key);
+                    topCarImage.classList.remove("loading");
+                }
+                return;
+            }
+
             try {
-                const brand = item.brand || "";
-                const model = item.model || "";
                 const prompt = `${brand} ${model}, modern car, 3/4 front view, studio lighting, ultra realistic render`;
 
                 const res = await fetch(IMAGE_URL, {
@@ -946,10 +970,23 @@
 
                 const blob = await res.blob();
                 const url = URL.createObjectURL(blob);
+                imageCache.set(key, url);
+
+                if (currentImageKey !== key) {
+                    return;
+                }
+
+                topCarImage.onload = () => {
+                    topCarImage.classList.remove("loading");
+                    topCarImage.onload = null;
+                };
                 topCarImage.src = url;
             } catch (e) {
                 console.error(e);
-                topCarImage.src = "https://images.unsplash.com/photo-1549921296-3c52d935b9a1?auto=format&fit=crop&w=1000&q=80";
+                if (currentImageKey === key) {
+                    topCarImage.classList.remove("loading");
+                    topCarImage.src = DEFAULT_IMAGE;
+                }
             }
         }
 
