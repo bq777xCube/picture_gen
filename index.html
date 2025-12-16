@@ -512,7 +512,7 @@
             background: #fff5f6;
         }
 
-        /* Loading section */
+        /* Loading */
 
         .loading {
             display: none;
@@ -545,14 +545,6 @@
             0% { opacity: 0.6; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
-        }
-
-        /* Top image loading effect */
-
-        #topCarImage.loading {
-            opacity: 0.35;
-            filter: blur(2px);
-            transition: opacity 0.2s ease, filter 0.2s ease;
         }
 
         /* Footer */
@@ -721,10 +713,9 @@
         const submitBtn = document.getElementById('submitBtn');
         const submitText = document.querySelector('.submit-text');
 
-        const imageCache = new Map();
-        const DEFAULT_IMAGE =
-            "https://images.unsplash.com/photo-1549921296-3c52d935b9a1?auto=format&fit=crop&w=1000&q=80";
-        let currentImageKey = null;
+        // State
+        let currentItems = [];
+        let currentImageRequestId = 0;
 
         function fillExample(exampleText) {
             userQuery.value = exampleText;
@@ -874,9 +865,11 @@
             }
         }
 
-        function displayOtherCars(items) {
+        function displayOtherCars(activeIndex) {
             otherCarsList.innerHTML = "";
-            items.forEach((item) => {
+            currentItems.forEach((item, index) => {
+                if (index === activeIndex) return; // skip top car
+
                 const brand = item.brand || "";
                 const model = item.model || "";
                 const fullName = formatCarName(brand, model);
@@ -919,19 +912,13 @@
                         <div class="rating">
                             ${stars} <span>${rating}</span>
                         </div>
-                        <button class="view-btn" type="button">View</button>
+                        <button class="view-btn" type="button" data-index="${index}">View</button>
                     </div>
                 `;
 
                 const viewBtn = card.querySelector('.view-btn');
-                viewBtn.addEventListener('click', async () => {
-                    displayTopCar(item);
-                    showContentBlocks();
-                    await generateTopCarImage(item);
-                    window.scrollTo({
-                        top: document.querySelector('header').offsetTop,
-                        behavior: 'smooth'
-                    });
+                viewBtn.addEventListener('click', () => {
+                    setTopIndex(index, true);
                 });
 
                 otherCarsList.appendChild(card);
@@ -939,26 +926,16 @@
         }
 
         async function generateTopCarImage(item) {
-            const brand = item.brand || "";
-            const model = item.model || "";
-            const keyBase = `${brand}_${model}`.trim();
-            const key = keyBase ? keyBase.toLowerCase() : "unknown";
-
-            currentImageKey = key;
-
-            topCarImage.src = DEFAULT_IMAGE;
-            topCarImage.classList.add("loading");
-
-            if (imageCache.has(key)) {
-                if (currentImageKey === key) {
-                    topCarImage.src = imageCache.get(key);
-                    topCarImage.classList.remove("loading");
-                }
-                return;
-            }
-
             try {
+                const brand = item.brand || "";
+                const model = item.model || "";
                 const prompt = `${brand} ${model}, modern car, 3/4 front view, studio lighting, ultra realistic render`;
+
+                // mark this request as the latest
+                const myId = ++currentImageRequestId;
+
+                // reset img while loading (keeps grey block, no old car)
+                topCarImage.removeAttribute('src');
 
                 const res = await fetch(IMAGE_URL, {
                     method: "POST",
@@ -970,23 +947,35 @@
 
                 const blob = await res.blob();
                 const url = URL.createObjectURL(blob);
-                imageCache.set(key, url);
 
-                if (currentImageKey !== key) {
-                    return;
-                }
+                // if another request started in the meantime, ignore this one
+                if (myId !== currentImageRequestId) return;
 
-                topCarImage.onload = () => {
-                    topCarImage.classList.remove("loading");
-                    topCarImage.onload = null;
-                };
                 topCarImage.src = url;
             } catch (e) {
                 console.error(e);
-                if (currentImageKey === key) {
-                    topCarImage.classList.remove("loading");
-                    topCarImage.src = DEFAULT_IMAGE;
+
+                // only set fallback if this is still the latest request
+                if (!topCarImage.src) {
+                    topCarImage.src = "https://images.unsplash.com/photo-1549921296-3c52d935b9a1?auto=format&fit=crop&w=1000&q=80";
                 }
+            }
+        }
+
+        function setTopIndex(index, scrollToTop = false) {
+            if (!currentItems.length || !currentItems[index]) return;
+
+            const item = currentItems[index];
+            displayTopCar(item);
+            displayOtherCars(index);
+            generateTopCarImage(item);
+            showContentBlocks();
+
+            if (scrollToTop) {
+                window.scrollTo({
+                    top: document.querySelector('header').offsetTop,
+                    behavior: 'smooth'
+                });
             }
         }
 
@@ -1010,15 +999,12 @@
                     emptyState.style.display = 'block';
                     topCarBlock.style.display = 'none';
                     otherCarsBlock.style.display = 'none';
+                    currentItems = [];
                     return;
                 }
 
-                const [top, ...others] = items;
-                displayTopCar(top);
-                displayOtherCars(others);
-                await generateTopCarImage(top);
-
-                showContentBlocks();
+                currentItems = items;
+                setTopIndex(0, false);
             } catch (err) {
                 console.error(err);
                 showError("Something went wrong. Please try again later.");
